@@ -15,10 +15,14 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+const formStyle = {
+  backgroundColor: 'grey'
+}
 function App() {
   const [msg, setMsg] = useState("")
   const [location, setLocation] = useState({})
   const [btn, setBtn] = useState(false)
+  const [userName, setUserName] = useState('')
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(function (position) {
@@ -34,7 +38,8 @@ function App() {
     setBtn(!btn)
     let d = new Date();
     let date = `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}  ${d.getDate()}/${d.getMonth()}/${d.getFullYear()}`
-    db.collection("users").add({
+    let docRef = db.collection('users');
+    docRef.doc(userName).collection('message').add({
       msg: msg,
       location: location,
       timestamp: date
@@ -47,12 +52,14 @@ function App() {
       });
   }
 
-  console.log(btn,location, msg)
+  
   return (
     <div className="App">
-      <form >
-        <input type="text" value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Message"></input>
-        <button onClick={sendMsg}>Send</button>
+      <form  style={formStyle}>
+        
+        <input type="text" value={userName} onChange={(e) => setUserName(e.target.value)} placeholder="User"></input>
+        <br/><input type="text" value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Message"></input>
+        <br/><button onClick={sendMsg}>Send</button>
       </form>
     </div >
   );
